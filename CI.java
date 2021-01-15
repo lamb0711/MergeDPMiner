@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 public class CommitUnitInfo {
-	ArrayList<String> key;
-	String authorId;
-	TreeSet<String> subsystems;
-	TreeSet<String> directories;
-	TreeSet<String> files;
-	TreeSet<String> previousCommitHashs;
-	ArrayList<Integer> modifiedLines;
-	double Entropy;
+	private ArrayList<String> key;
+	private String authorId;
+	private TreeSet<String> subsystems;
+	private TreeSet<String> directories;
+	private TreeSet<String> files;
+	private TreeSet<String> previousCommitHashs;
 	
 	
 	public CommitUnitInfo() {
@@ -21,8 +19,6 @@ public class CommitUnitInfo {
 		this.directories = new TreeSet<String>();
 		this.files = new TreeSet<String>();
 		this.previousCommitHashs = new TreeSet<String>();
-		this.modifiedLines = new ArrayList<Integer>();
-		this.Entropy = 0.0;
 	}
 	
 	public ArrayList<String> getKey() {
@@ -61,21 +57,6 @@ public class CommitUnitInfo {
 	}
 	public void setPreviousCommitHashs(String previousCommitHash) {
 		this.previousCommitHashs.add(previousCommitHash);
-	}
-	public ArrayList<Integer> getModifiedLines() {
-		return modifiedLines;
-	}
-
-	public void setModifiedLines(int modifiedLine) {
-		this.modifiedLines.add(modifiedLine);
-	}
-
-	public double getEntropy() {
-		return Entropy;
-	}
-
-	public void setEntropy(double entropy) {
-		Entropy = entropy;
 	}
 
 }
