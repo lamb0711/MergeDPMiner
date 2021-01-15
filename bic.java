@@ -14,37 +14,40 @@ import edu.handong.csee.isel.Main;
 import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.metadata.CommitCollector;
-
+/**
+ * 
+ * @author 
+ *
+ */
 public class CMetricCollector implements MetricCollector {
-	Git git;
-	Repository repo;
-	String referencePath;
-	Input input;
-	String startDate;
-	String endDate;
-	String midDate;
-	boolean developerHistory;
+	private Git git;
+	private Repository repo;
+	private String referencePath;
+	private String startDate;
+	private String endDate;
+	private String midDate;
+	private boolean developerHistory;
 	public static HashMap<String,Integer> tooLongName = new HashMap<>();
-	static int tooLongNameIndex = 0;
-	boolean allGitLog;
+	private static int tooLongNameIndex = 0;
 	
 	List<String> bicList;
 	
-	public CMetricCollector(Input input, boolean developerHistory) throws IOException {
-		this.input = input;
-		git = Git.open(Main.getGitDirectory(input));
+	public CMetricCollector(boolean developerHistory) throws IOException {
+		git = Git.open(Main.getGitDirectory());
 		repo = git.getRepository();
-		referencePath = input.outPath + File.separator + input.projectName +"-reference";
+		referencePath = Input.outPath + File.separator + Input.projectName +"-reference";
 		
 		if(startDate == null) this.startDate = "0000-00-00 00:00:00";
-		else this.startDate = input.startDate;
+		else this.startDate = Input.startDate;
 		if(endDate == null) this.endDate = "9999-99-99 99:99:99";
-		else this.endDate = input.endDate;
+		else this.endDate = Input.endDate;
 		
 		this.developerHistory = developerHistory;
-		this.allGitLog = input.allGitLog;
 	}
 
+	/**
+	 * @param commitList
+	 */
 	@Override
 	public File collectFrom(List<RevCommit> commitList) {
 		File bowArff, cVectorArff;
@@ -56,7 +59,7 @@ public class CMetricCollector implements MetricCollector {
 		bowCollector.setBIC(bicList);
 		bowCollector.setCommitList(commitList);
 		bowCollector.setReferencePath(referencePath);
-		bowCollector.setProjectName(input.projectName);
+		bowCollector.setProjectName(Input.projectName);
 		bowCollector.setStartDate(startDate);
 		bowCollector.setEndDate(endDate);
 		bowCollector.collect();
@@ -70,7 +73,7 @@ public class CMetricCollector implements MetricCollector {
 		cVectorCollector.setBIC(bicList);
 		cVectorCollector.setCommitList(commitList);
 		cVectorCollector.setReferencePath(referencePath);
-		cVectorCollector.setProjectName(input.projectName);
+		cVectorCollector.setProjectName(Input.projectName);
 		cVectorCollector.setStartDate(startDate);
 		cVectorCollector.setEndDate(endDate);
 		cVectorCollector.collect();
@@ -82,20 +85,19 @@ public class CMetricCollector implements MetricCollector {
 
 		ArffHelper arffHelper = new ArffHelper();
 		arffHelper.setReferencePath(referencePath);
-		arffHelper.setProjectName(input.projectName);
-		arffHelper.setOutPath(input.outPath);
-		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector);
+		arffHelper.setProjectName(Input.projectName);
+		arffHelper.setOutPath(Input.outPath);
+		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector); //arrf 파일이 하나나온다  <<bow-vector arff>>
 
 		// TODO: 4. Meta data, SJ help me
-		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, input.projectName, startDate, endDate, developerHistory, allGitLog); //StartDate, strEndDate, test
+		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, Input.projectName, startDate, endDate, developerHistory); //StartDate, strEndDate, test
 		if(developerHistory) commitCollector.setMidDate(midDate);
 		commitCollector.countCommitMetrics();
 		commitCollector.saveResultToCsvFile();
-		commitCollector.setAllGitLog(allGitLog);
 		String arffOutputPath = commitCollector.CSV2ARFF();
 		
 		File metaArff = new File(arffOutputPath); // TODO: Here your logic: make
-																					// metadata arff
+																					// metadata arff //reference 안에 있는 arff...!
 
 		ArrayList<String> keyOrder = arffHelper.getKeyOrder();
 
@@ -104,7 +106,7 @@ public class CMetricCollector implements MetricCollector {
 		File resultArff = null;
 
 		try {
-			if(!developerHistory)resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);
+			if(!developerHistory)resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);// 여기서 섞는 최종 key-data arff
 			else resultArff = arffHelper.makeMergedDeveloperHistoryArff(mergedArff, metaArff, keyOrder, midDate);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -114,12 +116,20 @@ public class CMetricCollector implements MetricCollector {
 		return resultArff;
 	}
 
+	/**
+	 * @param bicList
+	 * @return
+	 */
 	@Override
 	public void setBIC(List<String> bicList) {
 		this.bicList = bicList;
 
 	}
 	
+	/**
+	 * @param bicList
+	 * @return
+	 */
 	public void setMidDate(String midDate) {
 		this.midDate = midDate;
 	}
