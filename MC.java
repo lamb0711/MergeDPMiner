@@ -1,6 +1,5 @@
 package edu.handong.csee.isel.metric.metadata;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -16,64 +15,26 @@ import edu.handong.csee.isel.metric.metadata.Metrics;
 import edu.handong.csee.isel.metric.metadata.SourceFileInfo;
 import edu.handong.csee.isel.metric.metadata.Utils;
 
-public class MetricCollector { //metric Collector
-	public void parsePatchContents(Metrics metric,CommitUnitInfo commitUnitInfo, String commitHash,String diffContent) {
+public class MetricCollector {
+	public void parsePatchContents(Metrics metaDataInfo, String commitHash,String diffContent) {
 
 		int numOfDeleteLines = 0; // metricVariable.getNumOfDeleteLines();
 		int numOfAddLines = 0; // metricVariable.getNumOfAddLines();
-		
-		int numOfAddChunk = 0;
-		int numOfDeleteChunk = 0;
-		
-		String beforeLine = "E";
+		int distributionOfModifiedLines = 0; // metricVariable.getDistributionOfModifiedLines();
 
 		List<String> diffLines = Arrays.asList(diffContent.split("\\n"));
 
 		for(int i = 5; i < diffLines.size(); i++) {
 			String line = diffLines.get(i);
-			
-			if(line.startsWith("-")) {
-				if(beforeLine.equals("+")) {
-					numOfDeleteChunk++;
-				}
-				numOfDeleteLines++;
-				beforeLine = "-";
-			}
-			else if(line.startsWith("+")) {
-				if(beforeLine.equals("-")) {
-					numOfDeleteChunk++;
-				}
-				numOfAddLines++;
-				beforeLine = "+";
-			}
-			else if(line.startsWith("@@")){
-				beforeLine = "E";
-			}else {
-				if(beforeLine.equals("-")) {
-					numOfDeleteChunk++;
-					beforeLine = "E";
-				}else if(beforeLine.equals("+")) {
-					numOfAddChunk++;
-					beforeLine = "E";
-				}
-			}
+			if(line.startsWith("-")) numOfDeleteLines++;
+			else if(line.startsWith("+")) numOfAddLines++;
+			else if(line.startsWith("@@")) distributionOfModifiedLines++;
 		}
 		
-		if(beforeLine.equals("-")) {
-			numOfDeleteChunk++;
-		}else if(beforeLine.equals("+")) {
-			numOfAddChunk++;
-		}
-		
-		int numOfModifyLines = numOfDeleteLines + numOfAddLines;
-		metric.setNumOfModifyLines(numOfModifyLines);
-		metric.setNumOfAddLines(numOfAddLines);
-		metric.setNumOfDeleteLines(numOfDeleteLines);
-		metric.setNumOfAddChunk(numOfAddChunk);
-		metric.setNumOfDeleteChunk(numOfDeleteChunk);
-		metric.setNumOfModifyChunk(numOfAddChunk + numOfDeleteChunk);
-		commitUnitInfo.setModifiedLines(numOfModifyLines);
-		commitUnitInfo.setEntropy(commitUnitInfo.getEntropy() + (double)numOfModifyLines);
+		metaDataInfo.setNumOfModifyLines(numOfDeleteLines + numOfAddLines);
+		metaDataInfo.setNumOfAddLines(numOfAddLines);
+		metaDataInfo.setNumOfDeleteLines(numOfDeleteLines);
+		metaDataInfo.setDistributionOfModifiedLines(distributionOfModifiedLines);
 	}
 
 
@@ -122,7 +83,7 @@ public class MetricCollector { //metric Collector
 
 	}
 
-	public void parseCommitUnitInfo(CommitUnitInfo commitUnitInfo, String sourcePath, String key,HashMap<String,DeveloperExperienceInfo> developerExperience,String authorId) {
+	public void parseCommitUnitInfo(CommitUnitInfo commitUnitInfo, String sourcePath, String key) {
 		String[] pathToken = sourcePath.split("/");
 		String subsystem = pathToken[0];
 		String file = pathToken[pathToken.length-1];
@@ -133,18 +94,14 @@ public class MetricCollector { //metric Collector
 		while(matcher.find()) {
 			directorie = matcher.group(1);
 		}
-		
-		if(!subsystem.startsWith("src")) {
-			commitUnitInfo.setSubsystems(subsystem);
-			developerExperience.get(authorId).setNumOfSubsystem(subsystem);
-		}
 
 		commitUnitInfo.setKey(key);
+		commitUnitInfo.setSubsystems(subsystem);
 		commitUnitInfo.setDirectories(directorie);
 		commitUnitInfo.setFiles(file);
 	}
 	
-	public void computeDeveloperInfo(HashMap<String,DeveloperExperienceInfo> developerExperience,String authorId, String commitTime, int numOfSubsystem) {
+	public void computeDeveloperInfo(HashMap<String,DeveloperExperienceInfo> developerExperience,String authorId, String commitTime) {
 		String[] TimeToken = commitTime.split("-");
 		int year =  Integer.parseInt(TimeToken[0]) + 1;
 		float REXP = 0;
@@ -161,21 +118,6 @@ public class MetricCollector { //metric Collector
 			REXP = REXP + (float)numerator/denominator;
 		}
 		developerExperience.get(authorId).setREXP(REXP);
-	}
-	
-	public void computeEntropy(CommitUnitInfo commitUnitInfo) {
-		ArrayList<Integer> modifiedLines = commitUnitInfo.getModifiedLines();
-
-		double allNum = commitUnitInfo.getEntropy();
-		double entropy = 0.0;
-
-		for(int modifiedLine : modifiedLines) {
-			if(modifiedLine == 0) continue;
-			double value = (double)modifiedLine/(double)allNum;
-			double log = Math.log(value) / Math.log(2);
-			entropy += (value * log) * -1;
-		}
-		commitUnitInfo.setEntropy((double)Math.round(entropy*1000)/1000);
-
+		
 	}
 }
