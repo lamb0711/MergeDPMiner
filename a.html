@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="css/dpMiner.css" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap" rel="stylesheet">
+
+    <title>BIC Mining</title>
+
+</head>
+<body>
+<!-- Navigation bar + hambuger menu -->
+<div class="icon-bar">
+    <a>
+        <div class="container" onclick="hamburgClick(this)">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+        </div>
+    </a>
+</div>
+
+<div id="sidenav">
+    <a href="../index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="repositoryMining.html">Repository Mining</a>
+    <a href="patchMining.html">Patch Mining</a>
+    <a href="bicMining.html">BIC/BFC Mining</a>
+    <a href="metricMining.html">Metric Mining</a>
+    <a href="../download">File Download</a>
+
+</div>
+
+<div id="togglemenu">
+    <a href="#">Log in</a>
+    <a href="#">Register</a>
+</div>
+
+<div class="center" id="hometext">
+    <a class="maintxt">Repository<br>Mining</a> <!-- parameter ${data} : bic or metric-->
+    <!-- How to use btn -->
+    <div class="button">
+        <a href="#" class="btn1"><span>How to use</span></a>
+    </div>
+
+    <!-- popup -->
+    <div id="modal">
+        <div class="modal-bg">
+            <div class="modal-cont">
+                <h2>Layer Popup</h2>
+                <p>We hope you have enjoyed using Materialize and if you feel like it has helped you out and want to support the team you can help us by donating or backing us on Patreon. Any amount would help support and continue development on this project and is greatly appreciated.</p>
+                <a href="#" class="close close1">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M14.1,12L22,4.1c0.6-0.6,0.6-1.5,0-2.1c-0.6-0.6-1.5-0.6-2.1,0L12,9.9L4.1,2C3.5,1.4,2.5,1.4,2,2C1.4,2.5,1.4,3.5,2,4.1
+        L9.9,12L2,19.9c-0.6,0.6-0.6,1.5,0,2.1c0.3,0.3,0.7,0.4,1.1,0.4s0.8-0.1,1.1-0.4l7.9-7.9l7.9,7.9c0.3,0.3,0.7,0.4,1.1,0.4
+        s0.8-0.1,1.1-0.4c0.6-0.6,0.6-1.5,0-2.1L14.1,12z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div><!-- popup -->
+
+    <form name="repo_form" action = "/dpminer/findRepoMining" method="post" onSubmit="return false;">  <div class="form-group">
+        <!-- Email -->
+        <div class="radiogroup">
+            <a class="issuetxt">Email Address</a>
+            <div class="input-container">
+                <input type="email" id="email" name="email">
+            </div>
+        </div>
+        <!-- Email -->
+
+        <!-- date picker -->
+        <div class="radiogroup">
+            <a class="issuetxt">Create Date</a>
+            <div class="inbox">
+                <span class="repoDateSubText">Since</span>
+                <input type="date" name="createDateBefore" id="createDateBefore" value="createDateBefore" />
+                <span class="repoDateSubText">Until</span>
+                <input type="date" name="createDateAfter" id="createDateAfter" value="createDateAfter" />
+            </div>
+        </div>
+
+        <div class="radiogroup">
+            <a class="issuetxt">Recent Date</a>
+            <div class="inbox">
+                <span class="repoDateSubText">Since</span>
+                <input type="date" name="recentDateBefore" id="recentDateBefore" value="recentDateBefore" />
+                <span class="repoDateSubText">Until</span>
+                <input type="date" name="recentDateAfter" id="recentDateAfter" value="recentDateAfter"/>
+            </div>
+        </div>
+        <!-- date picker -->
+
+        
+    <!-- language URL -->
+    <div class="radiogroup">
+      <a class="issuetxt">Language Type</a>
+            <div class="input-container">
+                <input type="text" id="language" name="language">
+            </div>
+
+
+            <a class="issuetxt">Author Token</a>
+            <div class="input-container">
+                <input type="text" id="authToken" name="authToken">
+            </div>
+        </div>
+
+        <div class="twogroup">
+            <a class="issuetxt">Commit Count</a>
+            <div class="inputTwo">
+                <label id="commitCountBase" name="commitCountBase">
+                    <label for="commitCountMax">Check the less or over</label>
+                    <select name="commitCountBase">
+                        <option id="null" value="" selected> Select Box </option>
+                        <option id="less" value="less">less</option>
+                        <option id="over" value="over">over</option>
+                    </select>
+                </label>
+
+                <div class="field">
+                    <input type="text" name="commitCountMax" id="commitCountMax" >
+                    <label for="commitCountMax">Input number</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="twogroup">
+            <a class="issuetxt">Fork Count</a>
+            <div class="inputTwo">
+                <div class="field">
+                    <input type="text" name="forkNumMin" id="forkNumMin" placeholder="Minimum: Integer">
+                    <label for="forkNumMin">Min Fork Count</label>
+                </div>
+
+                <div class="field">
+                    <input type="text" name="forkNumMax" id="forkNumMax" placeholder="Maximum: Integer" >
+                    <label for="forkNumMax">Max Fork Count</label>
+                </div>
+            </div>
+        </div>
+        <!-- Github URL -->
+    <!-- run button -->
+    <button type="submit" class="btn effect04" onclick="checkOption()" data-sm-link-text="START" target="_blank">Run</button>
+
+    </div>
+    </form>
+
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script>
+    function checkOption() {
+        const theForm = document.repo_form;
+        const temp = getFormatDate(new Date());
+        const date = new Date(temp);
+
+        document.getElementById("email").style.backgroundColor = "#E7E7E7";
+        document.getElementById("authToken").style.backgroundColor = "#E7E7E7";
+        document.getElementById("createDateBefore").style.backgroundColor = "#E7E7E7";
+        document.getElementById("createDateAfter").style.backgroundColor = "#E7E7E7";
+        document.getElementById("recentDateBefore").style.backgroundColor = "#E7E7E7";
+        document.getElementById("recentDateAfter").style.backgroundColor = "#E7E7E7";
+        document.getElementById("forkNumMin").style.backgroundColor = "#E7E7E7";
+        document.getElementById("forkNumMax").style.backgroundColor = "#E7E7E7";
+
+        // 아무 조건 안들어왔을 때
+        if(theForm.email.value == "" ){
+            document.getElementById("email").style.backgroundColor = "#ffc9c9";
+            alert("Email must be required.");
+            return false;
+        }
+        if(theForm.authToken.value == ""){
+            document.getElementById("authToken").style.backgroundColor = "#ffc9c9";
+            alert("Auth Token must be required.");
+            return false;
+        }
+        if(theForm.email.value != "" && theForm.authToken.value != "" && theForm.createDateBefore.value == "" && theForm.createDateAfter.value == "" && theForm.recentDateAfter.value == "" && theForm.recentDateBefore.value == "" && theForm.language.value == "" && theForm.forkNumMin.value == "" && theForm.forkNumMax.value == ""){
+            alert("At least one condition is required.");
+            console.log("1");
+            return false;
+        }
+        if(theForm.createDateBefore.value != "" && theForm.createDateAfter.value != ""){
+            const date1 = new Date(theForm.createDateBefore.value);
+            const date2 = new Date(theForm.createDateAfter.value);
+            // before이 after보다 최근일때
+            if(date1 >= date2){
+                document.getElementById("createDateBefore").style.backgroundColor = "#ffc9c9";
+                document.getElementById("createDateAfter").style.backgroundColor = "#ffc9c9";
+                alert("Check your Create Date");
+                console.log("2");
+                return false;
+            }
+            // before이 미래일 때
+            if(date1 >= date){
+                document.getElementById("createDateBefore").style.backgroundColor = "#ffc9c9";
+                alert("Check your Create Date Since");
+                console.log("2");
+                return false;
+            }
+            // after이 미래일 때
+            if(date2 >= date){
+                document.getElementById("createDateAfter").style.backgroundColor = "#ffc9c9";
+                alert("Check your Create Date Until");
+                console.log("2");
+                return false;
+            }
+            console.log("3");
+        }
+        // before이 미래일 때
+        if(theForm.createDateBefore.value != "" && theForm.createDateAfter.value == "") {
+            const date1 = new Date(theForm.createDateBefore.value);
+            if(date1 >= date){
+                document.getElementById("createDateBefore").style.backgroundColor = "#ffc9c9";
+                alert("Check your Create Date Since");
+                console.log("4");
+                return false;
+            }
+            console.log("5");
+        }
+        // after이 미래일 때
+        if(theForm.createDateBefore.value == "" && theForm.createDateAfter.value != "") {
+            const date1 = new Date(theForm.createDateAfter.value);
+            if(date1 >= date){
+                document.getElementById("createDateAfter").style.backgroundColor = "#ffc9c9";
+                alert("Check your Create Date Until");
+                return false;
+                console.log("6");
+            }
+            console.log("7");
+        }
+        if(theForm.recentDateBefore.value != "" && theForm.recentDateAfter.value != ""){
+            const date1 = new Date(theForm.recentDateBefore.value);
+            const date2 = new Date(theForm.recentDateAfter.value);
+            // before이 after보다 최근일때
+            if(date1 >= date2){
+                document.getElementById("recentDateBefore").style.backgroundColor = "#ffc9c9";
+                document.getElementById("recentDateAfter").style.backgroundColor = "#ffc9c9";
+                alert("Check your Recent Date");
+                console.log("8");
+                return false;
+            }
+            // before이 미래일 때
+            if(date1 >= date){
+                document.getElementById("recentDateBefore").style.backgroundColor = "#ffc9c9";
+                alert("Check your Recent Date Since");
+                console.log("2");
+                return false;
+            }
+            // after이 미래일 때
+            if(date2 >= date){
+                document.getElementById("recentDateAfter").style.backgroundColor = "#ffc9c9";
+                alert("Check your Recent Date Until");
+                console.log("2");
+                return false;
+            }
+            console.log("9");
+        }
+        // before이 미래일 때
+        if(theForm.recentDateBefore.value != "" && theForm.recentDateAfter.value == "") {
+            const date1 = new Date(theForm.recentDateBefore.value);
+            if(date1 >= date){
+                document.getElementById("recentDateBefore").style.backgroundColor = "#ffc9c9";
+                alert("Check your Recent Date Since");
+                console.log("10");
+                return false;
+            }
+            console.log("11");
+        }
+        // after이 미래일 때
+        if(theForm.recentDateBefore.value == "" && theForm.recentDateAfter.value != "") {
+            const date1 = new Date(theForm.recentDateAfter.value);
+            if(date1 >= date){
+                document.getElementById("recentDateAfter").style.backgroundColor = "#ffc9c9";
+                alert("Check your Recent Date Until");
+                console.log("12");
+                return false;
+            }
+            console.log("13");
+        }
+        //min max값을 잘못 넣은 경우
+        if(theForm.forkNumMin.value != "" && theForm.forkNumMax.value != ""){
+            if(parseInt(theForm.forkNumMin.value) >= parseInt(theForm.forkNumMax.value)){
+                document.getElementById("forkNumMin").style.backgroundColor = "#ffc9c9";
+                document.getElementById("forkNumMax").style.backgroundColor = "#ffc9c9";
+                alert("Check your Fork Count");
+                console.log("14");
+                return false;
+            }
+            console.log("15");
+        }
+
+
+        console.log("16");
+        theForm.submit();
+    }
+
+    function getFormatDate(date){
+        var year = date.getFullYear();
+        var month = (1 + date.getMonth());
+        month = month >= 10 ? month : '0' + month;
+        var day = date.getDate();
+        day = day >= 10 ? day : '0' + day;
+        return year + '-' + month + '-' + day;
+    }
+
+
+    function hamburgClick(x) {
+        x.classList.toggle("change");
+
+        var toggleMenu = document.getElementById('togglemenu');
+
+        if(toggleMenu.classList.contains("on")){
+            toggleMenu.classList.remove("on");
+        } else {
+            toggleMenu.classList.add("on");
+        }
+    }
+
+    $(".button").click(function(){
+        $("#modal").removeAttr("class").addClass("one");
+    });
+
+    $(".close").click(function(){
+        $("#modal").addClass("out");
+    });
+
+    /*repo text box*/
+
+
+</script>
+
+</body>
+</html>
